@@ -25,13 +25,13 @@
  User Interface Design: The development of a user-friendly interface involves design principles and best practices to ensure an intuitive user experience. This may include layout design, color schemes, and interactive components.
 
  ## Tools Used
- Python: Python is the primary programming language used for developing the application. It is known for its simplicity, readability, and extensive libraries for data manipulation, web development, and API integration.
- Streamlit: Streamlit is a popular Python library used for building interactive web applications with minimal code. It provides easy-to-use widgets and components for creating user interfaces directly from Python scripts.
- Pandas: Pandas is a powerful data manipulation library in Python used for data analysis and manipulation. It is used to handle and pre-process the park data stored in the df_Park DataFrame.
- Requests: The Requests library is commonly used for making HTTP requests in Python. It is used to fetch data from external APIs such as the National Park Service API.
- JSON: JSON (JavaScript Object Notation) is a lightweight data interchange format used for transmitting data between a server and a client. It is likely used for parsing and processing data retrieved from external APIs, such as the National Park Service API.
- Git: Git is a version control system used for tracking changes in the codebase, collaborating with other developers, and managing project history. It helps in maintaining code quality, facilitating collaboration, and ensuring project integrity.
- Backblaze: The Backblaze application, often referred to as Backblaze Personal Backup or Backblaze Business Backup, is a software application developed by Backblaze that enables users to securely backup their files and data to the cloud.
+ * Python: Python is the primary programming language used for developing the application. It is known for its simplicity, readability, and extensive libraries for data manipulation, web development, and API integration.
+ * Streamlit: Streamlit is a popular Python library used for building interactive web applications with minimal code. It provides easy-to-use widgets and components for creating user interfaces directly from Python scripts.
+ * Pandas: Pandas is a powerful data manipulation library in Python used for data analysis and manipulation. It is used to handle and pre-process the park data stored in the df_Park DataFrame.
+ * Requests: The Requests library is commonly used for making HTTP requests in Python. It is used to fetch data from external APIs such as the National Park Service API.
+ * JSON: JSON (JavaScript Object Notation) is a lightweight data interchange format used for transmitting data between a server and a client. It is likely used for parsing and processing data retrieved from external APIs, such as the National Park Service API.
+ * Git: Git is a version control system used for tracking changes in the codebase, collaborating with other developers, and managing project history. It helps in maintaining code quality, facilitating collaboration, and ensuring project integrity.
+ * Backblaze: The Backblaze application, often referred to as Backblaze Personal Backup or Backblaze Business Backup, is a software application developed by Backblaze that enables users to securely backup their files and data to the cloud.
 
 
  ## Ethical Concerns
