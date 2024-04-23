@@ -6,6 +6,8 @@ from utils.b2 import B2
 import folium
 from streamlit_folium import folium_static
 import pandas as pd
+import requests
+
 
 
 # ------------------------------------------------------
@@ -90,6 +92,20 @@ class ParkExplorer:
         #     except Exception as e:
         #         st.write(f"Error loading image from URL: {e}")
 
+    def fetch_alerts(self,park_code):
+        try:
+            key = os.environ['api_key']
+            url = f"https://developer.nps.gov/api/v1/alerts?parkCode={park_code}&api_key={key}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                return data["data"]
+            else:
+                st.error("Failed to fetch alerts")
+                return None
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            return None
 
 
 def main():
@@ -97,58 +113,22 @@ def main():
     st.markdown(
         """
         <style>
-
         .stApp {
             background-color: #000000;
-            font
-            
-        }
-        h1,h2,h3,h4,h5,h6,h7,h8,h9 {
-        color: #FFFFFF; 
+            font-color: #FFFFF   
         }
         .stMarkdown > div > p {
         color: white !important;
         }
-        .st-ek {
-        color: white !important;
+        h1,h2,h3,h4,h5,h6,h7,h8,h9 {
+        color: #FFFFFF; 
         }
-   
-        .st-av > div > div {
-        color: white !important;
-        }
-        .st-ax {
-        background-color: black !important;
-        }
-        .stTextInput>div>div>div>input {
-            color: #FFFFFF;
-        }
-        .stButton>button {
-            background-color: #6c757d;
-            color: white;
-        }
-        .stCheckbox>div>div>label::before {
-            border-color: #FFFFFF;
-        }
-        .stCheckbox>div>div>label:hover::before {
-            background-color: #FFFFFF;
-        }
-        .stCheckbox>div>div>label::after {
-            background-color: #00000;
-        }
-        .stCheckbox>div>div>div>div {
-            color: #00000;
-        }
-        
-        .st-ck {
-        background-color: white !important;
-        }
-        
+
+
         </style>
         """,
         unsafe_allow_html=True
     )
-
-    
 
     # Load park data
     df_park = get_data()
@@ -159,8 +139,20 @@ def main():
     selected_state = st.selectbox("",df_park['address_stateCode'].unique())
     st.markdown("<h5 style='color: white;'>Select a Park:</h5>", unsafe_allow_html=True)
     parks_in_state = park_explorer.get_parks_in_state(selected_state)
+
     # Display park selection dropdown
     park_name = st.selectbox("", parks_in_state)
+
+    #alerts
+    park_code = df_park[df_park['fullName'] == park_name]['parkCode'].iloc[0]
+    # st.write(park_code)
+    alerts = park_explorer.fetch_alerts(park_code)
+    if alerts:
+        st.subheader("Alerts")
+        for alert in alerts:
+            st.write(f"Category: {alert['category']}")
+            st.write(f"Description: {alert['description']}")
+            st.write("---")
 
     # Display park details
     park_explorer.display_park_details(park_name)
