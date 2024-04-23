@@ -78,17 +78,11 @@ class ParkExplorer:
 
     def display_multimedia(self, park_name):
         park = self.df[self.df['fullName'] == park_name]
-        # st.subheader("Multimedia")
-        images_urls = park['images_url'].values[0]  # Assuming images are provided as a comma-separated list
-        # for image_url in images_urls:
-        # st.write(images_urls)
+        
+        images_urls = park['images_url'].values[0]  
+       
         st.image(images_urls, caption='', use_column_width=True)
-        #     try:
-        #         image = Image.open(image_url)
-        #         st.image(image, caption='', use_column_width=True)
-        #     except Exception as e:
-        #         st.write(f"Error loading image from URL: {e}")
-
+        
     def fetch_alerts(self,park_code):
         on = st.toggle(" :red[show Alerts]")
         if on:
@@ -117,13 +111,16 @@ class ParkExplorer:
                     data = response.json()
                     return data["data"]
                 else:
-                    st.error("Failed to fetch alerts")
+                    st.error("Failed to fetch fees")
                     return None
         except Exception as e:
             st.error(f"An error occurred: {e}")
             return None
         
-
+class TestDisplayFeeInfo:
+    def test_failed_to_fetch_api(self):
+        expected_output = "Failed to fetch fees"
+        self.assertEqual(ParkExplorer.fetch_fee("abcd"), expected_output)
 
 def main():
     st.title("National Park Explorer")
@@ -172,7 +169,7 @@ def main():
     # Display park details
     park_explorer.display_park_details(park_name)
  
-    st.subheader("Select below option to know more information!")
+    st.subheader("Explore additional information about the park!")
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs([":green[Directions]", ":green[Weather]", ":green[Contact]", ":green[Map]", ":green[Gallery]"])
     # Display other features
