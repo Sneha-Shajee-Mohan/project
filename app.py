@@ -1,5 +1,4 @@
 import os
-import pickle
 import streamlit as st
 from dotenv import load_dotenv
 from utils.b2 import B2
@@ -53,22 +52,20 @@ class ParkExplorer:
         park = self.df[self.df['fullName'] == park_name]
         st.subheader(park_name)
         st.write("Description:", park['description'].values[0])
-        st.write("Location:", park['states'].values[0])
         
-
     def display_direction(self, park_name):
         park = self.df[self.df['fullName'] == park_name]
-        st.subheader("Directions")
+        # st.subheader("Directions")
         st.write(park['directionsInfo'].values[0])
 
     def display_weather_info(self, park_name):
         park = self.df[self.df['fullName'] == park_name]
-        st.subheader("Weather Info")
+        # st.subheader("Weather Info")
         st.write(park['weatherInfo'].values[0])
 
     def display_contact_info(self, park_name):
         park = self.df[self.df['fullName'] == park_name]
-        st.subheader("Contact Info")
+        # st.subheader("Contact Info")
         st.write("Phone Number:", park['park_phoneNumber'].values[0])
         st.write("Email Address:", park['park_emailAddress'].values[0])
 
@@ -81,7 +78,7 @@ class ParkExplorer:
 
     def display_multimedia(self, park_name):
         park = self.df[self.df['fullName'] == park_name]
-        st.subheader("Multimedia")
+        # st.subheader("Multimedia")
         images_urls = park['images_url'].values[0]  # Assuming images are provided as a comma-separated list
         # for image_url in images_urls:
         # st.write(images_urls)
@@ -93,19 +90,39 @@ class ParkExplorer:
         #         st.write(f"Error loading image from URL: {e}")
 
     def fetch_alerts(self,park_code):
-        try:
-            key = os.environ['api_key']
-            url = f"https://developer.nps.gov/api/v1/alerts?parkCode={park_code}&api_key={key}"
-            response = requests.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                return data["data"]
-            else:
-                st.error("Failed to fetch alerts")
+        on = st.toggle(" :red[show Alerts]")
+        if on:
+            try:
+                key = os.environ['api_key']
+                url = f"https://developer.nps.gov/api/v1/alerts?parkCode={park_code}&api_key={key}"
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data["data"]
+                else:
+                    st.error("Failed to fetch alerts")
+                    return None
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
                 return None
+            
+
+    def fetch_fee(self,park_code):
+        
+        try:
+                key = os.environ['api_key']
+                url = f"https://developer.nps.gov/api/v1/feespasses?parkCode={park_code}&api_key={key}"
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data["data"]
+                else:
+                    st.error("Failed to fetch alerts")
+                    return None
         except Exception as e:
             st.error(f"An error occurred: {e}")
             return None
+        
 
 
 def main():
@@ -114,17 +131,15 @@ def main():
         """
         <style>
         .stApp {
-            background-color: #000000;
+            background-color: #202020;
             font-color: #FFFFF   
         }
         .stMarkdown > div > p {
-        color: white !important;
+        color: white 
         }
         h1,h2,h3,h4,h5,h6,h7,h8,h9 {
         color: #FFFFFF; 
         }
-
-
         </style>
         """,
         unsafe_allow_html=True
@@ -135,7 +150,7 @@ def main():
 
     # Create ParkExplorer object
     park_explorer = ParkExplorer(df_park)
-    st.markdown("<h5 style='color: white;'>Select a state</h5>", unsafe_allow_html=True)
+    st.markdown("<h5 style='color: white;'>Select a state:</h5>", unsafe_allow_html=True)
     selected_state = st.selectbox("",df_park['address_stateCode'].unique())
     st.markdown("<h5 style='color: white;'>Select a Park:</h5>", unsafe_allow_html=True)
     parks_in_state = park_explorer.get_parks_in_state(selected_state)
@@ -158,21 +173,59 @@ def main():
     park_explorer.display_park_details(park_name)
  
     st.subheader("Select below option to know more information!")
+
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([":green[Directions]", ":green[Weather]", ":green[Contact]", ":green[Map]", ":green[Gallery]"])
     # Display other features
-    if st.checkbox(":green[Display Directions]"):
+    # if st.checkbox(":green[Display Directions]"):
+    #     park_explorer.display_direction(park_name)
+
+    # if st.checkbox(":green[Display Weather Info]"):
+    #     park_explorer.display_weather_info(park_name)
+
+    # if st.checkbox(":green[Display Contact Info]"):
+    #     park_explorer.display_contact_info(park_name)
+
+    # if st.checkbox(" :green[Display Interactive Map]"):
+    #     park_explorer.display_interactive_map(park_name)
+
+    # if st.checkbox(" :green[Display Multimedia]"):
+    #     park_explorer.display_multimedia(park_name)
+
+    with tab1:
+        st.header("Direction information")
         park_explorer.display_direction(park_name)
 
-    if st.checkbox(":green[Display Weather Info]"):
+    with tab2:
+        st.header("Weather details")
         park_explorer.display_weather_info(park_name)
 
-    if st.checkbox(":green[Display Contact Info]"):
+    with tab3:
+        st.header("Contact Information")
         park_explorer.display_contact_info(park_name)
 
-    if st.checkbox(" :green[Display Interactive Map]"):
+    with tab4:
+        st.header("Get a little help with Maps")
         park_explorer.display_interactive_map(park_name)
 
-    if st.checkbox(" :green[Display Multimedia]"):
+    with tab5:
+        st.header("Gallery")
         park_explorer.display_multimedia(park_name)
+
+
+    fees = park_explorer.fetch_fee(park_code)
+    if fees:
+    
+        # st.subheader("Fee Details")
+            for fee in fees:
+             
+                if fee['entranceFeeDescription']:
+                    with st.popover(":red[show fee details]"):
+                        st.write(f":green[{fee['entranceFeeDescription']}]")
+                else:
+                    with st.popover(":red[show fee details]"):
+                        st.write(":green[No information available]")
+                
+
 
 if __name__ == "__main__":
     main()
